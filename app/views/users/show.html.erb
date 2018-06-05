@@ -1,0 +1,11 @@
+<p id="notice"><%#= notice %></p>
+
+<p>
+  <strong>Name: <%= @user.name %></strong>
+  <% if @user == current_user %>
+    <%= link_to 'Edit', edit_user_path(@user) %> |
+    <%= link_to 'Destroy', @user, method: :delete, data: { confirm: 'Are you sure?' } %>
+  <% end %>
+</p>
+
+
