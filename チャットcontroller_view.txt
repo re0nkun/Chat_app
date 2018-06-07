@@ -1,0 +1,84 @@
+    def show 
+      @room_id = message_room_id(current_user, @user)
+      @messages = Messsage.recent_in_room(@room_id)
+    end
+    def message_room_id(first_user, second_user)
+      first_id = first_user.id.to_i
+      second_id = second_user.id.to_i
+      if first_id < second_id
+        "#{first_user.id}-#{second_user.id}"
+      else
+        "#{second_user.id}-#{first_user.id}"
+      end
+    end
+
+    <% if !(current_user == @user) && logged_in? %>
+      <section class="message_box">
+        <div id="messages">
+          <%= render @messages %>
+        </div>
+      </section>
+      <div class="message_form">
+            <%#= render 'messages/message_form', {from_user: current_user, to_user: @user, room_id: @room_id} %>
+
+        <form class="message_form">
+          <input type="hidden" name="from_id" value="<%= current_user.id %>">
+          <input type="hidden" name="to_id" value="<%= @user.id %>">
+          <input type="hidden" name="room_id" value="<%= @room_id %>">
+          <label>Send Message to <%= @user.name %></label><br>
+          <input type="text" name="content" data-behavior="chat_speaker">
+        </form>
+      </div>
+      <script type="text/javascript">
+        var height = 0;
+        $("div.message").each( function() {
+          height += ($(this).height());
+        });
+        $('section.message_box').scrollTop(height);
+      </script>
+    <% end %>
+
+<div class="message" data-session="<%= session[:user_id] %>">
+  <% user = User.find_by(id: message.from_id) %>
+  <p class="<%= message.id %>" id="message_sender">
+    <%= user.name %>
+  </p>
+  <p class="<%= message.id %>" id="message_content">
+    <%= message.content %>
+  </p>
+  <script type="text/javascript">
+    var from_id = <%= message.from_id %>;
+    var current_user_id = $('.message').data('session');
+    if(from_id == current_user_id){
+      $('p.' + <%= message.id %>).css('text-align', 'right');
+    }else{
+      $('p.' + <%= message.id %>).css('text-align', 'left');
+    }
+  </script>
+</div>
+
+    <form class="message_form">
+      <input type="hidden" name="from_id" value="<%= from_user.id %>">
+      <input type="hidden" name="to_id" value="<%= to_user.id %>">
+      <input type="hidden" name="room_id" value="<%= room_id %>">
+      <label>Send Message to <%= to_user.name %></label><br>
+      <input type="text" name="content" data-behavior="chat_speaker">
+    </form>
+
+section.message_box {
+  padding: 10px;
+  border: 1px solid $gray-light;
+  overflow: scroll;
+  #messages {
+    height: 400px;
+  }
+}
+div.message_form {
+  padding-top: 10px;
+}
+#message_sender {
+  font-size: 1.1em;
+}
+#message_content {
+  font-size: 1.0em;
+}

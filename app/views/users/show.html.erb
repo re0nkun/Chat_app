@@ -7,5 +7,28 @@
     <%= link_to 'Destroy', @user, method: :delete, data: { confirm: 'Are you sure?' } %>
   <% end %>
 </p>
+<% if !(current_user == @user)%>
+  <section class="message_box">
+    <div id="messages">
+      <%= render @messages %>
+    </div>
+  </section>
+  <div class="message_form">
+    <form class="message_form">
+      <input type="hidden" name="from_id" value="<%= current_user.id %>">
+      <input type="hidden" name="to_id" value="<%= @user.id %>">
+      <input type="hidden" name="room_id" value="<%= @room_id %>">
+      <label>Send Message to <%= @user.name %></label><br>
+      <input type="text" name="content" data-behavior="chat_speaker">
+    </form>
+  </div>
+  <script type="text/javascript">
+    var height = 0;
+    $("div.message").each( function() {
+      height += ($(this).height());
+    });
+    $('section.message_box').scrollTop(height);
+  </script>
+<% end %>
 
 

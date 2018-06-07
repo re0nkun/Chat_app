@@ -1,0 +1,18 @@
+<div class="message" data-session="<%= @current_user_id %>">
+  <% user = User.find_by(id: message.from_id) %>
+  <p id="message_sender" class="<%= message.id %>">
+    <%= user.name %>
+  </p>
+  <p id="message_content" class="<%= message.id %>">
+    <%= message.content %>
+  </p>
+  <script type="text/javascript">
+    var from_id = <%= message.from_id %>;
+    var current_user_id = $('.message').data('session');
+    if(from_id == current_user_id){
+      $('p.' + <%= message.id %>).css('text-align','left');
+    }else{
+      $('p.' + <%= message.id %>).css('text-align','right');
+    }
+  </script>
+</div>

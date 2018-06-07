@@ -12,6 +12,9 @@ class UsersController < ApplicationController
   # GET /users/1
   # GET /users/1.json
   def show
+    @current_user_id = current_user.id
+    @room_id = message_room_id(current_user, @user)
+    @messages = Message.recent_in_room(@room_id)
   end
 
   # GET /users/new
@@ -76,5 +79,15 @@ class UsersController < ApplicationController
 
     def set_current_user
       @user = current_user
+    end
+
+    def message_room_id(first_user, second_user)
+      first_id = first_user.id.to_i
+      second_id = second_user.id.to_i
+      if first_id < second_id
+        "#{first_user.id}-#{second_user.id}"
+      else
+        "#{second_user.id}-#{first_user.id}"
+      end
     end
 end

@@ -1,0 +1,38 @@
+rails g model Message content:text from_id:integer to_id:integer room_id:string
+
+add_index :messages, [:room_id, :created_at]
+
+belongs_to :from, class_name: "User"
+belongs_to :to, class_name: "User"
+
+#from
+has_many :to_messages, class_name: "Message",
+          foreign_key: "to_id", dependent: :destroy
+has_many :received_messages, through :to_messages, source: :to
+#to
+has_many :from_messages, class_name: "Message", 
+          foreign_key: "from_id", dependent: :destroy
+has_many :sent_messages, through :from_messages, source: :from
+
+      belongs_to :from, class_name: "User"
+        belongs_to :to, class_name: "User"
+      #from
+      has_many :active_msgs, foreign_key: "from_id", class_name: "Message"
+      has_many :received_users, through :active_msgs, source: :to
+        #to
+        has_many :passive_msgs, foreign_key: "to_id", class_name: "Message"
+        has_many :sent_users, through :passive_msgs, source: :from
+
+
+default_scope -> {order(created_at: :asc)}
+validates :from_id, presence: true
+validates :to_id , presence: true
+validates :room_id, presence: true
+validates :content, presence: true, length: {maximum: 50}
+def self.recent_in_room(room_id)
+  where(room_id: room_id).last(500)
+end
+def send_message(other_user, room_id, content)
+  self.from_messages.create!(to_id: other_user.id, room_id: room_id, content: content)
+    # self.active_msgs.create!(to_id: other_user.id, room_id: room_id, content: content)
+end
